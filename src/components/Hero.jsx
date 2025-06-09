@@ -62,7 +62,6 @@ const Hero = () => {
   useGSAP(
     () => {
       if (hasClicked) {
-        gsap.set("#next-video", { visibility: "visible" });
         gsap.to("#next-video", {
           transformOrigin: "center center",
           scale: 1,
@@ -78,6 +77,7 @@ const Hero = () => {
           duration: 1.5,
           ease: "power1.inOut",
         });
+        gsap.set("#next-video", { visibility: "visible" });
       }
     },
     {
