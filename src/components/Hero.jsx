@@ -12,9 +12,10 @@ gsap.registerPlugin(ScrollTrigger);
 const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(1);
   const [hasClicked, setHasClicked] = useState(false);
-
   const [loading, setLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
+
+  const [videoBlobs, setVideoBlobs] = useState({});
 
   const totalVideos = 4;
   const nextVdRef = useRef(null);
@@ -22,6 +23,29 @@ const Hero = () => {
   const handleVideoLoad = () => {
     setLoadedVideos((prev) => prev + 1);
   };
+
+  useEffect(() => {
+  const preloadVideos = async () => {
+    const blobs = {};
+    
+    for (let i = 1; i <= totalVideos; i++) {
+      try {
+        const response = await fetch(`videos/hero-${i}.mp4`);
+        const blob = await response.blob();
+        blobs[i] = URL.createObjectURL(blob);
+      } catch (error) {
+        console.error(`Error loading video ${i}:`, error);
+      }
+    }
+
+    setVideoBlobs(blobs);
+  };
+
+  preloadVideos();
+    return () => {
+      Object.values(videoBlobs).forEach(URL.revokeObjectURL);
+    };
+  }, []);
 
   useEffect(() => {
     if (loadedVideos === totalVideos - 1) {
@@ -80,7 +104,9 @@ const Hero = () => {
     });
   });
 
-  const getVideoSrc = (index) => `videos/hero-${index}.mp4`;
+  const getVideoSrc = (index) => {
+   return videoBlobs[index] || `videos/hero-${index}.mp4`;
+  };
 
   return (
     <div className="relative h-dvh w-screen overflow-x-hidden">
