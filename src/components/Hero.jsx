@@ -60,31 +60,38 @@ const Hero = () => {
   };
 
   useGSAP(
-    () => {
-      if (hasClicked) {
-        gsap.set("#next-video", { visibility: "visible" });
-        gsap.to("#next-video", {
-          transformOrigin: "center center",
+  () => {
+    if (hasClicked) {
+      // First play the video before animating
+      nextVdRef.current.play();
+      
+      gsap.timeline()
+        .set("#next-video", { 
+          visibility: "visible",
+          scale: 0.4,
+          width: "256px", // size-64 equivalent
+          height: "256px"
+        })
+        .to("#next-video", {
           scale: 1,
           width: "100%",
           height: "100%",
           duration: 1,
-          ease: "power1.inOut",
-          onStart: () => nextVdRef.current.play(),
+          ease: "power.inOut",
         });
-        gsap.from("#current-video", {
-          transformOrigin: "center center",
-          scale: 0,
-          duration: 1.5,
-          ease: "power1.inOut",
-        });
-      }
-    },
-    {
-      dependencies: [currentIndex],
-      revertOnUpdate: true,
+
+      gsap.from("#current-video", {
+        scale: 0,
+        duration: 1,
+        ease: "power1.inOut",
+      });
     }
-  );
+  },
+  {
+    dependencies: [currentIndex],
+    revertOnUpdate: true,
+  }
+);
 
   useGSAP(() => {
     gsap.set("#video-frame", {
